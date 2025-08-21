@@ -496,10 +496,9 @@ const BenefitsPage = () => {
 
   // Get current animal data
   const currentAnimalType = animal.toLowerCase();
-  const currentPricing = useMemo(() => animalPricing[currentAnimalType] || {}, [currentAnimalType]);
-  const currentHospitals = useMemo(() => partnerHospitals[currentAnimalType] || [], [currentAnimalType]);
-  const currentAccessories = useMemo(() => freeAccessories[currentAnimalType] || [], [currentAnimalType]);
-  const currentServices = useMemo(() => services247[currentAnimalType] || [], [currentAnimalType]);
+  const currentHospitals = useMemo(() => partnerHospitals[currentAnimalType] || [], [currentAnimalType, partnerHospitals]);
+  const currentAccessories = useMemo(() => freeAccessories[currentAnimalType] || [], [currentAnimalType, freeAccessories]);
+  const currentServices = useMemo(() => services247[currentAnimalType] || [], [currentAnimalType, services247]);
 
   // Set default selected pet for the animal type - using useMemo to avoid dependency issues
   const defaultPet = useMemo(() => {
@@ -508,7 +507,7 @@ const BenefitsPage = () => {
       return Object.keys(pricing)[0];
     }
     return null;
-  }, [currentAnimalType]);
+  }, [currentAnimalType, animalPricing]);
 
   // Set selected pet when defaultPet changes
   useEffect(() => {
@@ -517,7 +516,7 @@ const BenefitsPage = () => {
     }
   }, [defaultPet, selectedPet]);
 
-  const currentPet = currentPricing[selectedPet] || {};
+  const currentPet = animalPricing[currentAnimalType]?.[selectedPet] || {};
 
   // Calculate total accessories value
   const calculateAccessoriesValue = () => {
@@ -537,14 +536,14 @@ const BenefitsPage = () => {
         </h1>
 
         {/* Pet Selection */}
-        {Object.keys(currentPricing).length > 0 && (
+        {Object.keys(animalPricing[currentAnimalType] || {}).length > 0 && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
             <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Choose Your {animal.charAt(0).toUpperCase() + animal.slice(1)} Breed</h2>
             
             {/* Visual Breed Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              {Object.keys(currentPricing).map((pet) => {
-                const petData = currentPricing[pet];
+              {Object.keys(animalPricing[currentAnimalType] || {}).map((pet) => {
+                const petData = animalPricing[currentAnimalType]?.[pet];
                 const isSelected = selectedPet === pet;
                 return (
                   <div
@@ -593,9 +592,9 @@ const BenefitsPage = () => {
               <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    {currentPricing[selectedPet].image && (
+                    {animalPricing[currentAnimalType]?.[selectedPet]?.image && (
                       <img
-                        src={currentPricing[selectedPet].image}
+                        src={animalPricing[currentAnimalType]?.[selectedPet]?.image}
                         alt={selectedPet}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
@@ -607,7 +606,7 @@ const BenefitsPage = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">You Save</p>
-                    <p className="text-xl font-bold text-green-600">₹{currentPricing[selectedPet].savings?.toLocaleString()}</p>
+                    <p className="text-xl font-bold text-green-600">₹{animalPricing[currentAnimalType]?.[selectedPet]?.savings?.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -616,7 +615,7 @@ const BenefitsPage = () => {
         )}
 
         {/* Pricing Comparison */}
-        {Object.keys(currentPricing).length > 0 && (
+        {Object.keys(animalPricing[currentAnimalType] || {}).length > 0 && (
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg shadow-lg p-6 mb-8">
             <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
               💰 Incredible Price Savings
