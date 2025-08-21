@@ -506,7 +506,8 @@ const BenefitsPage = () => {
     if (currentPricing && Object.keys(currentPricing).length > 0) {
       setSelectedPet(Object.keys(currentPricing)[0]);
     }
-  }, [currentAnimalType, currentPricing]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAnimalType]);
 
   const currentPet = currentPricing[selectedPet] || {};
 
