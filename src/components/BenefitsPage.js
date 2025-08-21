@@ -506,7 +506,7 @@ const BenefitsPage = () => {
     if (currentPricing && Object.keys(currentPricing).length > 0) {
       setSelectedPet(Object.keys(currentPricing)[0]);
     }
-  }, [currentAnimalType]);
+  }, [currentAnimalType, currentPricing]);
 
   const currentPet = currentPricing[selectedPet] || {};
 
