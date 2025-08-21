@@ -503,10 +503,11 @@ const BenefitsPage = () => {
 
   // Set default selected pet for the animal type
   useEffect(() => {
-    if (currentPricing && Object.keys(currentPricing).length > 0) {
-      setSelectedPet(Object.keys(currentPricing)[0]);
+    const pricing = animalPricing[currentAnimalType] || {};
+    if (pricing && Object.keys(pricing).length > 0) {
+      setSelectedPet(Object.keys(pricing)[0]);
     }
-  }, [currentAnimalType, currentPricing]);
+  }, [currentAnimalType]);
 
   const currentPet = currentPricing[selectedPet] || {};
 
