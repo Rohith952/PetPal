@@ -501,13 +501,21 @@ const BenefitsPage = () => {
   const currentAccessories = useMemo(() => freeAccessories[currentAnimalType] || [], [currentAnimalType]);
   const currentServices = useMemo(() => services247[currentAnimalType] || [], [currentAnimalType]);
 
-  // Set default selected pet for the animal type
-  useEffect(() => {
+  // Set default selected pet for the animal type - using useMemo to avoid dependency issues
+  const defaultPet = useMemo(() => {
     const pricing = animalPricing[currentAnimalType] || {};
     if (pricing && Object.keys(pricing).length > 0) {
-      setSelectedPet(Object.keys(pricing)[0]);
+      return Object.keys(pricing)[0];
     }
-  }, [currentAnimalType]); // Fixed ESLint dependency issue
+    return null;
+  }, [currentAnimalType]);
+
+  // Set selected pet when defaultPet changes
+  useEffect(() => {
+    if (defaultPet && defaultPet !== selectedPet) {
+      setSelectedPet(defaultPet);
+    }
+  }, [defaultPet, selectedPet]);
 
   const currentPet = currentPricing[selectedPet] || {};
 
