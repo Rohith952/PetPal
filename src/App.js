@@ -1,5 +1,8 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "./firebase";
+import { signOut } from "firebase/auth";
 import Login from "./Login";
 import Signup from "./Signup";
 import Home from "./components/Home";
@@ -17,27 +20,80 @@ import OrdersPage from "./components/OrdersPage";
 import BenefitsPage from "./components/BenefitsPage";
 import TurtlePage from "./components/TurtlePage";
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const [user, loading] = useAuthState(auth);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+// Main App Component with Authentication Check
+const AppContent = () => {
+  const [user, loading] = useAuthState(auth);
+
+  // Clear any cached authentication on app start
+  useEffect(() => {
+    const clearAuth = async () => {
+      try {
+        // Check if there's a user but we want to start fresh
+        if (user) {
+          await signOut(auth);
+        }
+      } catch (error) {
+        console.log("Auth reset complete");
+      }
+    };
+
+    // Only run this once when component mounts
+    clearAuth();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+      <Route path="/signup" element={user ? <Navigate to="/" replace /> : <Signup />} />
+      <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+      <Route path="/animal/:animal" element={<ProtectedRoute><AnimalPage /></ProtectedRoute>} />
+      <Route path="/animal/dogs" element={<ProtectedRoute><DogPage /></ProtectedRoute>} />
+      <Route path="/animal/dogs/buy" element={<ProtectedRoute><DogBuyPage /></ProtectedRoute>} />
+      <Route path="/animal/rabbits/buy" element={<ProtectedRoute><RabbitBuyPage /></ProtectedRoute>} />
+      <Route path="/animal/birds" element={<ProtectedRoute><BirdPage /></ProtectedRoute>} />
+      <Route path="/animal/birds/buy" element={<ProtectedRoute><BirdBuyPage /></ProtectedRoute>} />
+      <Route path="/animal/hamsters" element={<ProtectedRoute><HamsterPage /></ProtectedRoute>} />
+      <Route path="/animal/hamsters/buy" element={<ProtectedRoute><HamsterBuyPage /></ProtectedRoute>} />
+      <Route path="/animal/turtles" element={<ProtectedRoute><TurtlePage /></ProtectedRoute>} />
+      <Route path="/animal/:animal/buy" element={<ProtectedRoute><BuyPage /></ProtectedRoute>} />
+      <Route path="/animal/:animal/benefits" element={<ProtectedRoute><BenefitsPage /></ProtectedRoute>} />
+      <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+      <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+    </Routes>
+  );
+};
+
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/animal/:animal" element={<AnimalPage />} />
-        <Route path="/animal/dogs" element={<DogPage />} />
-        <Route path="/animal/dogs/buy" element={<DogBuyPage />} />
-        <Route path="/animal/rabbits/buy" element={<RabbitBuyPage />} />
-        <Route path="/animal/birds" element={<BirdPage />} />
-        <Route path="/animal/birds/buy" element={<BirdBuyPage />} />
-        <Route path="/animal/hamsters" element={<HamsterPage />} />
-        <Route path="/animal/hamsters/buy" element={<HamsterBuyPage />} />
-        <Route path="/animal/turtles" element={<TurtlePage />} />
-        <Route path="/animal/:animal/buy" element={<BuyPage />} />
-        <Route path="/animal/:animal/benefits" element={<BenefitsPage />} />
-        <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/payment" element={<PaymentPage />} />
-      </Routes>
+      <AppContent />
     </Router>
   );
 };
