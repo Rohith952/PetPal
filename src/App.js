@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
@@ -24,6 +24,8 @@ import TurtlePage from "./components/TurtlePage";
 const ProtectedRoute = ({ children }) => {
   const [user, loading] = useAuthState(auth);
 
+  console.log("ProtectedRoute - user:", user, "loading:", loading);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -33,6 +35,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
+    console.log("No user, redirecting to login");
     return <Navigate to="/login" replace />;
   }
 
@@ -43,22 +46,7 @@ const ProtectedRoute = ({ children }) => {
 const AppContent = () => {
   const [user, loading] = useAuthState(auth);
 
-  // Clear any cached authentication on app start
-  useEffect(() => {
-    const clearAuth = async () => {
-      try {
-        // Check if there's a user but we want to start fresh
-        if (user) {
-          await signOut(auth);
-        }
-      } catch (error) {
-        console.log("Auth reset complete");
-      }
-    };
-
-    // Only run this once when component mounts
-    clearAuth();
-  }, []);
+  console.log("AppContent - user:", user, "loading:", loading);
 
   if (loading) {
     return (
