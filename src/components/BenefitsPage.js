@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "./Navbar";
 
@@ -496,18 +496,17 @@ const BenefitsPage = () => {
 
   // Get current animal data
   const currentAnimalType = animal.toLowerCase();
-  const currentPricing = animalPricing[currentAnimalType] || {};
-  const currentHospitals = partnerHospitals[currentAnimalType] || [];
-  const currentAccessories = freeAccessories[currentAnimalType] || [];
-  const currentServices = services247[currentAnimalType] || [];
+  const currentPricing = useMemo(() => animalPricing[currentAnimalType] || {}, [currentAnimalType]);
+  const currentHospitals = useMemo(() => partnerHospitals[currentAnimalType] || [], [currentAnimalType]);
+  const currentAccessories = useMemo(() => freeAccessories[currentAnimalType] || [], [currentAnimalType]);
+  const currentServices = useMemo(() => services247[currentAnimalType] || [], [currentAnimalType]);
 
   // Set default selected pet for the animal type
   useEffect(() => {
     if (currentPricing && Object.keys(currentPricing).length > 0) {
       setSelectedPet(Object.keys(currentPricing)[0]);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAnimalType]);
+  }, [currentAnimalType, currentPricing]);
 
   const currentPet = currentPricing[selectedPet] || {};
 
