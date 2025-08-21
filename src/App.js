@@ -20,6 +20,13 @@ import OrdersPage from "./components/OrdersPage";
 import BenefitsPage from "./components/BenefitsPage";
 import TurtlePage from "./components/TurtlePage";
 
+// Test environment variables
+console.log("Environment test:", {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY ? "✅ Set" : "❌ Missing",
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ? "✅ Set" : "❌ Missing",
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID ? "✅ Set" : "❌ Missing"
+});
+
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const [user, loading] = useAuthState(auth);
